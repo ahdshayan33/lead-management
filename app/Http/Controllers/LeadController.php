@@ -192,6 +192,11 @@ class LeadController extends Controller
                 'assigned_to' => 'nullable|exists:users,id',
             ]);
 
+            // Reset reminder if follow-up date has changed
+            if ($lead->follow_up_date != ($validated['follow_up_date'] ?? null)) {
+                $validated['follow_up_reminder_sent_at'] = null;
+            }
+
             $lead->update($validated);
         }
 
@@ -213,6 +218,11 @@ class LeadController extends Controller
 
                 'requirements' => 'nullable|string',
             ]);
+
+            // Reset reminder if follow-up date has changed
+            if ($lead->follow_up_date != ($validated['follow_up_date'] ?? null)) {
+                $validated['follow_up_reminder_sent_at'] = null;
+            }
 
             $lead->update($validated);
         }

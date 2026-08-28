@@ -20,7 +20,9 @@ class SendFollowUpReminders extends Command
         $leads = Lead::with('assignedStaff')
             ->whereNotNull('follow_up_date')
             ->whereNotNull('assigned_to')
+            ->whereNull('follow_up_reminder_sent_at')
             ->whereDate('follow_up_date', '<=', $today)
+            ->whereNotIn('status', ['Converted', 'Lost'])
             ->get();
 
         if ($leads->isEmpty()) {
@@ -34,9 +36,15 @@ class SendFollowUpReminders extends Command
                 continue;
             }
 
+            // Send reminder to the assigned staff member
             $lead->assignedStaff->notify(
                 new FollowUpReminder($lead)
             );
+
+            // Record when the reminder was sent
+            $lead->update([
+                'follow_up_reminder_sent_at' => now(),
+            ]);
 
             if (Carbon::parse($lead->follow_up_date)->isPast()) {
                 $this->info(

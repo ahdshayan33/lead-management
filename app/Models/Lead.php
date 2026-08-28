@@ -19,6 +19,7 @@ class Lead extends Model
     'assigned_to',
     'follow_up_date',
     'priority',
+    'follow_up_reminder_sent_at',
     ];
 
     public function assignedStaff(): BelongsTo

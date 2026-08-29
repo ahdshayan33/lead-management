@@ -1,4 +1,3 @@
-```blade
 <x-app-layout>
 
     <div class="py-12">
@@ -34,12 +33,16 @@
                                 Back to Leads
                             </a>
 
-                            <a
-                                href="{{ route('leads.edit', $lead) }}"
+                            @if ($lead->status !== 'Converted')
+
+                                <a href="{{ route('leads.edit', $lead) }}"
                                 style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin-left: 10px;"
-                            >
-                                Edit Lead
-                            </a>
+                                >
+                                    Edit Lead
+                                </a>
+
+                            @endif
+
 
                         </div>
 

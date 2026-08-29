@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Models\LeadActivity;
 use App\Models\User;
+use App\Notifications\NewLeadAssigned;
+use App\Notifications\LeadRegisteredNotification;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -83,7 +86,7 @@ class LeadController extends Controller
         return view('leads.create');
     }
 
-    /**
+        /**
      * Store a newly registered lead.
      */
     public function store(Request $request)
@@ -103,13 +106,84 @@ class LeadController extends Controller
             'requirements' => 'nullable|string',
         ]);
 
-        $validated['status'] = 'New Lead';
+        /*
+        |--------------------------------------------------------------------------
+        | Automatically assign lead to staff member with the fewest active leads
+        |--------------------------------------------------------------------------
+        */
 
-        Lead::create($validated);
+        $staff = User::where('role', 'staff')
+            ->withCount([
+                'assignedLeads as active_leads_count' => function ($query) {
+                    $query->whereNotIn('status', ['Converted', 'Lost']);
+                }
+            ])
+            ->orderBy('active_leads_count')
+            ->orderBy('id')
+            ->first();
+
+        // Make sure at least one staff member exists
+        if (!$staff) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'name' => 'No staff members are available to assign this lead.',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create the lead
+        |--------------------------------------------------------------------------
+        */
+
+        $validated['status'] = 'New Lead';
+        $validated['assigned_to'] = $staff->id;
+
+        $lead = Lead::create($validated);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Send email to the lead
+        |--------------------------------------------------------------------------
+        */
+
+        if ($lead->communication_method === 'email' && $lead->email) {
+            \Illuminate\Support\Facades\Notification::route(
+                'mail',
+                $lead->email
+            )->notify(
+                new LeadRegisteredNotification($lead)
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notify assigned staff member
+        |--------------------------------------------------------------------------
+        */
+
+        $staff->notify(
+            new NewLeadAssigned($lead)
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Record lead creation activity
+        |--------------------------------------------------------------------------
+        */
+
+        LeadActivity::create([
+            'lead_id' => $lead->id,
+            'user_id' => auth()->id(),
+            'activity_type' => 'lead_created',
+            'communication_method' => null,
+            'notes' => 'Lead registered by ' . auth()->user()->name,
+        ]);
 
         return redirect()
             ->route('leads.create')
-            ->with('success', 'Lead registered successfully!');
+            ->with('success', 'Lead registered successfully and assigned to ' . $staff->name . '.');
     }
 
     /**
@@ -153,6 +227,7 @@ class LeadController extends Controller
         return view('leads.edit', compact('lead', 'staff'));
     }
 
+
     /**
      * Update an existing lead.
      */
@@ -165,6 +240,17 @@ class LeadController extends Controller
         ) {
             abort(403);
         }
+
+        $oldStatus = $lead->status;
+
+      
+        // Converted leads are final and cannot be moved back to another status
+        if ($oldStatus === 'Converted') {
+            return redirect()
+                ->route('leads.show', $lead)
+                ->with('error', 'This lead has already been converted and cannot be changed.');
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -190,6 +276,10 @@ class LeadController extends Controller
                 'priority' => 'required|in:Low,Medium,High',
 
                 'assigned_to' => 'nullable|exists:users,id',
+
+                'conversion_value' => 'nullable|numeric|min:0',
+
+                'conversion_notes' => 'nullable|string',
             ]);
 
             // Reset reminder if follow-up date has changed
@@ -217,6 +307,10 @@ class LeadController extends Controller
                 'priority' => 'required|in:Low,Medium,High',
 
                 'requirements' => 'nullable|string',
+
+                'conversion_value' => 'nullable|numeric|min:0',
+
+                'conversion_notes' => 'nullable|string',
             ]);
 
             // Reset reminder if follow-up date has changed
@@ -227,10 +321,55 @@ class LeadController extends Controller
             $lead->update($validated);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | CONVERSION RECORDING
+        |--------------------------------------------------------------------------
+        */
+
+        if ($oldStatus !== 'Converted' && $lead->status === 'Converted') {
+
+            $lead->update([
+                'converted_at' => now(),
+            ]);
+
+            LeadActivity::create([
+                'lead_id' => $lead->id,
+                'user_id' => auth()->id(),
+                'activity_type' => 'lead_converted',
+                'communication_method' => null,
+                'notes' => 'Lead converted by ' . auth()->user()->name
+                    . ($lead->conversion_value !== null
+                        ? '. Conversion value: ' . $lead->conversion_value
+                        : ''),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS CHANGE RECORDING
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $oldStatus !== $lead->status &&
+            $lead->status !== 'Converted'
+        ) {
+
+            LeadActivity::create([
+                'lead_id' => $lead->id,
+                'user_id' => auth()->id(),
+                'activity_type' => 'status_changed',
+                'communication_method' => null,
+                'notes' => "Status changed from {$oldStatus} to {$lead->status}.",
+            ]);
+        }
+
         return redirect()
             ->route('leads.show', $lead)
             ->with('success', 'Lead updated successfully!');
     }
+
 
 
         /**

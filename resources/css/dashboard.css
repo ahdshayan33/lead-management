@@ -1,0 +1,238 @@
+/* resources/css/dashboard.css
+   Fonts: Plus Jakarta Sans (headings/numbers) + Inter (body), via Bunny Fonts
+   (Bunny Fonts = privacy-friendly Google Fonts mirror, same one Laravel Breeze uses by default) */
+@import url('https://fonts.bunny.net/css?family=plus-jakarta-sans:500,600,700|inter:400,500,600&display=swap');
+
+:root {
+  --db-canvas: #F6F7F9;
+  --db-surface: #FFFFFF;
+  --db-border: #E4E7EC;
+  --db-border-soft: #F0F1F3;
+  --db-neutral-tint: #F3F4F6;
+  --db-neutral-tint-hover: #E9EAEE;
+  --db-ink: #12141C;
+  --db-ink-soft: #626873;
+  --db-ink-faint: #8B93A1;
+  --db-accent: #2453EB;
+  --db-accent-hover: #1E45C7;
+  --db-accent-tint: #EEF2FE;
+  --db-accent-tint-border: #D6E0FB;
+  --db-success: #15803D;
+  --db-success-tint: #EAF7EF;
+  --db-success-tint-border: #CDEBD9;
+  --db-warning: #B45309;
+  --db-danger: #C0342A;
+  --db-danger-tint-border: #F1DAD8;
+  --db-font-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --db-font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Scoped to the dashboard/reports/activities root only — never touches the rest of your app */
+.db-root {
+  font-family: var(--db-font-body);
+  background-color: var(--db-canvas);
+}
+
+.db-root h1,
+.db-root h2,
+.db-root h3,
+.db-root .db-heading,
+.db-root .db-metric-value {
+  font-family: var(--db-font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Surfaces */
+.db-card {
+  background-color: var(--db-surface);
+  border: 1px solid var(--db-border);
+  border-radius: 0.75rem;
+}
+
+/* Buttons & links */
+.db-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 0.5rem;
+  background-color: var(--db-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 150ms ease;
+}
+.db-btn-primary:hover {
+  background-color: var(--db-accent-hover);
+}
+
+.db-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: 0.5rem;
+  background-color: var(--db-neutral-tint);
+  color: var(--db-ink-soft);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.db-btn-secondary:hover {
+  background-color: var(--db-neutral-tint-hover);
+  color: var(--db-ink);
+}
+
+.db-link-muted {
+  color: var(--db-ink-soft);
+  font-weight: 500;
+  transition: color 150ms ease;
+}
+.db-link-muted:hover {
+  color: var(--db-ink);
+}
+
+.db-link-accent {
+  color: var(--db-accent);
+  font-weight: 500;
+  transition: color 150ms ease;
+}
+.db-link-accent:hover {
+  color: var(--db-accent-hover);
+}
+
+/* Form controls (filters, search, etc.) */
+.db-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--db-ink-soft);
+  margin-bottom: 0.375rem;
+}
+
+.db-input {
+  width: 100%;
+  border: 1px solid var(--db-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--db-ink);
+  background-color: #fff;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.db-input:focus {
+  outline: none;
+  border-color: var(--db-accent);
+  box-shadow: 0 0 0 3px var(--db-accent-tint);
+}
+
+/* Metric ledger strip */
+.db-metric-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--db-ink-faint);
+}
+
+.db-metric-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--db-ink);
+  margin-top: 0.375rem;
+}
+
+.db-metric-value--accent  { color: var(--db-accent); }
+.db-metric-value--warning { color: var(--db-warning); }
+.db-metric-value--success { color: var(--db-success); }
+.db-metric-value--danger  { color: var(--db-danger); }
+.db-metric-value--muted   { color: var(--db-ink-soft); }
+
+/* Status dots (Recent Leads table) */
+.db-dot {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+}
+.db-dot--new        { background-color: var(--db-accent); }
+.db-dot--contacted  { background-color: var(--db-ink-faint); }
+.db-dot--follow-up  { background-color: var(--db-warning); }
+.db-dot--converted  { background-color: var(--db-success); }
+.db-dot--lost        { background-color: var(--db-danger); }
+
+/* Priority text */
+.db-priority-high   { color: var(--db-danger); font-weight: 600; }
+.db-priority-medium { color: var(--db-ink-soft); }
+.db-priority-low    { color: var(--db-ink-faint); }
+
+/* Count pills (card headers) */
+.db-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.db-count-pill--danger { color: var(--db-danger); border: 1px solid var(--db-danger-tint-border); }
+.db-count-pill--accent { color: var(--db-accent); border: 1px solid var(--db-accent-tint-border); }
+
+/* Neutral badge (activity type tags, etc.) */
+.db-badge-neutral {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--db-neutral-tint);
+  color: var(--db-ink-soft);
+}
+
+/* Table (Dashboard, Reports pages) */
+.db-table thead tr { border-bottom: 1px solid var(--db-border); }
+.db-table th {
+  text-align: left;
+  padding: 0.625rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--db-ink-faint);
+}
+.db-table tbody tr { border-bottom: 1px solid var(--db-border-soft); }
+.db-table tbody tr:hover { background-color: #FAFAFB; }
+.db-table td { padding: 0.75rem 0.5rem; font-size: 0.875rem; }
+
+/* Soft tint blocks (Communication Preference cards, etc.) */
+.db-tint-block {
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid transparent;
+}
+.db-tint-block--accent {
+  background-color: var(--db-accent-tint);
+  border-color: var(--db-accent-tint-border);
+}
+.db-tint-block--success {
+  background-color: var(--db-success-tint);
+  border-color: var(--db-success-tint-border);
+}
+
+/* Inline text color helpers */
+.db-text-accent  { color: var(--db-accent); }
+.db-text-success { color: var(--db-success); }
+.db-text-warning { color: var(--db-warning); }
+.db-text-danger  { color: var(--db-danger); }
+.db-text-muted   { color: var(--db-ink-soft); }
+.db-text-faint   { color: var(--db-ink-faint); }

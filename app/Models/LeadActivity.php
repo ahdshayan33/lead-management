@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LeadActivity extends Model
 {
     protected $fillable = [
-        'lead_id',
-        'user_id',
-        'communication_method',
-        'notes',
-        'follow_up_date',
+    'lead_id',
+    'user_id',
+    'activity_type',
+    'communication_method',
+    'notes',
+    'follow_up_date',
     ];
-
+    
     /**
      * The lead this activity belongs to.
      */

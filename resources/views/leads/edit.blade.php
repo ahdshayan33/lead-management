@@ -179,6 +179,7 @@
 
                             <select
                                 name="status"
+                                id="lead-status"
                                 style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
                                 required
                             >
@@ -205,6 +206,135 @@
                             </select>
 
                         </div>
+
+
+                        {{-- ================================================= --}}
+                        {{-- CONVERSION DETAILS --}}
+                        {{-- ================================================= --}}
+
+                        <div
+                            id="conversion-section"
+                            style="
+                                display: {{ old('status', $lead->status) === 'Converted' ? 'block' : 'none' }};
+                                background-color: #f0fdf4;
+                                border: 1px solid #bbf7d0;
+                                padding: 20px;
+                                border-radius: 8px;
+                                margin-bottom: 20px;
+                            "
+                        >
+
+                            <h3 class="text-lg font-bold text-green-800 mb-1">
+                                Conversion Details
+                            </h3>
+
+                            <p class="text-sm text-green-700 mb-5">
+                                Enter the details of the successful conversion.
+                            </p>
+
+
+                            <!-- Conversion Value -->
+
+                            <div class="mb-4">
+
+                                <label class="block font-medium text-sm text-gray-700">
+                                    Conversion Value
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="conversion_value"
+                                    value="{{ old('conversion_value', $lead->conversion_value) }}"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="e.g. 1500.00"
+                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                >
+
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Enter the value or revenue generated from this conversion.
+                                </p>
+
+                            </div>
+
+
+                            <!-- Conversion Notes -->
+
+                            <div class="mb-2">
+
+                                <label class="block font-medium text-sm text-gray-700">
+                                    Conversion Notes
+                                </label>
+
+                                <textarea
+                                    name="conversion_notes"
+                                    rows="4"
+                                    placeholder="Add notes about the conversion..."
+                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                >{{ old('conversion_notes', $lead->conversion_notes) }}</textarea>
+
+                            </div>
+
+
+                            @if ($lead->converted_at)
+
+                                <p class="text-xs text-green-700 mt-3">
+                                    Converted on
+                                    {{ $lead->converted_at->format('d M Y, h:i A') }}
+                                </p>
+
+                            @endif
+
+                        </div>
+
+
+                       
+                        {{-- ================================================= --}}
+                        {{-- CONVERSION DETAILS --}}
+                        {{-- ================================================= --}}
+
+                        @if ($lead->status === 'Converted' || old('status', $lead->status) === 'Converted')
+
+                            <div class="mb-4">
+
+                                <label class="block font-medium text-sm text-gray-700">
+                                    Conversion Value
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="conversion_value"
+                                    value="{{ old('conversion_value', $lead->conversion_value) }}"
+                                    min="0"
+                                    step="0.01"
+                                    placeholder="Enter conversion value"
+                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                >
+
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Enter the value/revenue generated from this conversion.
+                                </p>
+
+                            </div>
+
+
+                            <div class="mb-6">
+
+                                <label class="block font-medium text-sm text-gray-700">
+                                    Conversion Notes
+                                </label>
+
+                                <textarea
+                                    name="conversion_notes"
+                                    rows="4"
+                                    placeholder="Add any notes about the conversion..."
+                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                >{{ old('conversion_notes', $lead->conversion_notes) }}</textarea>
+
+                            </div>
+
+                        @endif
+
 
 
                         {{-- ================================================= --}}
@@ -345,5 +475,38 @@
         </div>
 
     </div>
+
+
+    {{-- ================================================= --}}
+    {{-- SHOW / HIDE CONVERSION SECTION --}}
+    {{-- ================================================= --}}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const statusSelect = document.getElementById('lead-status');
+            const conversionSection = document.getElementById('conversion-section');
+
+            function toggleConversionSection() {
+
+                if (statusSelect.value === 'Converted') {
+
+                    conversionSection.style.display = 'block';
+
+                } else {
+
+                    conversionSection.style.display = 'none';
+
+                }
+            }
+
+            statusSelect.addEventListener('change', toggleConversionSection);
+
+            toggleConversionSection();
+
+        });
+
+    </script>
 
 </x-app-layout>

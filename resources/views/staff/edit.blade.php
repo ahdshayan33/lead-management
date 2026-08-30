@@ -1,178 +1,111 @@
 <x-app-layout>
 
-    <div class="py-12">
+    <div class="db-root py-8 sm:py-10 min-h-screen">
 
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow-sm sm:rounded-lg">
+            {{-- Page Header --}}
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="db-heading text-2xl font-semibold" style="color: var(--db-ink);">
+                        Edit Staff
+                    </h2>
+                    <p class="mt-1 text-sm" style="color: var(--db-ink-soft);">
+                        Update this staff member's account details.
+                    </p>
+                </div>
 
-                <div class="p-6">
+                <a href="{{ route('staff.show', $user) }}" class="db-btn-secondary self-start sm:self-auto">
+                    Back
+                </a>
+            </div>
 
-                    <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            @if ($errors->any())
+                <div class="db-tint-block db-tint-block--danger db-text-danger text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                        <div>
-                            <h2 class="text-2xl font-bold">
-                                Edit Staff
-                            </h2>
+            <div class="db-card">
+                <div class="p-5 sm:p-6">
 
-                            <p style="color: #6b7280;">
-                                Update this staff member's account details.
-                            </p>
-                        </div>
-
-                        <a
-                            href="{{ route('staff.show', $user) }}"
-                            style="background-color: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none;"
-                        >
-                            Back
-                        </a>
-
-                    </div>
-
-
-                    <!-- Validation Errors -->
-                    @if ($errors->any())
-
-                        <div
-                            style="background-color: #fee2e2; color: #991b1b; padding: 15px; margin-bottom: 20px; border-radius: 6px;"
-                        >
-
-                            <ul style="margin: 0; padding-left: 20px;">
-
-                                @foreach ($errors->all() as $error)
-
-                                    <li>{{ $error }}</li>
-
-                                @endforeach
-
-                            </ul>
-
-                        </div>
-
-                    @endif
-
-
-                    <!-- Edit Form -->
                     <form method="POST" action="{{ route('staff.update', $user) }}">
 
                         @csrf
                         @method('PUT')
 
-
-                        <!-- Name -->
                         <div class="mb-5">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Full Name
-                            </label>
-
+                            <label class="db-label">Full Name</label>
                             <input
                                 type="text"
                                 name="name"
                                 value="{{ old('name', $user->name) }}"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                                 required
                             >
-
                         </div>
 
-
-                        <!-- Email -->
                         <div class="mb-5">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Email Address
-                            </label>
-
+                            <label class="db-label">Email Address</label>
                             <input
                                 type="email"
                                 name="email"
                                 value="{{ old('email', $user->email) }}"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                                 required
                             >
-
-                            <p style="font-size: 13px; color: #6b7280; margin-top: 5px;">
+                            <p class="text-xs mt-1" style="color: var(--db-ink-faint);">
                                 Follow-up reminder emails will be sent to this address.
                             </p>
-
                         </div>
 
-
-                        <!-- Password -->
                         <div class="mb-5">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                New Password
-                            </label>
-
+                            <label class="db-label">New Password</label>
                             <input
                                 type="password"
                                 name="password"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                             >
-
-                            <p style="font-size: 13px; color: #6b7280; margin-top: 5px;">
+                            <p class="text-xs mt-1" style="color: var(--db-ink-faint);">
                                 Leave this blank if you do not want to change the password.
                             </p>
-
                         </div>
 
-
-                        <!-- Confirm Password -->
                         <div class="mb-6">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Confirm New Password
-                            </label>
-
+                            <label class="db-label">Confirm New Password</label>
                             <input
                                 type="password"
                                 name="password_confirmation"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                             >
-
                         </div>
 
-
-                        <!-- Role -->
-                        <div
-                            style="background-color: #f3f4f6; padding: 12px; border-radius: 6px; margin-bottom: 20px;"
-                        >
-
-                            <strong>Account Role:</strong> Staff
-
-                            <p style="font-size: 13px; color: #6b7280; margin-top: 4px;">
+                        <div class="mb-6" style="background-color: var(--db-neutral-tint); border-radius: 0.5rem; padding: 0.75rem 1rem;">
+                            <p class="text-sm font-semibold" style="color: var(--db-ink);">
+                                Account Role: Staff
+                            </p>
+                            <p class="text-xs mt-1" style="color: var(--db-ink-faint);">
                                 The staff role cannot be changed from this page.
                             </p>
-
                         </div>
 
-
-                        <!-- Buttons -->
-                        <div>
-
-                            <button
-                                type="submit"
-                                style="background-color: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;"
-                            >
+                        <div class="flex items-center gap-3">
+                            <button type="submit" class="db-btn-primary">
                                 Update Staff
                             </button>
 
-                            <a
-                                href="{{ route('staff.show', $user) }}"
-                                style="margin-left: 10px; background-color: #6b7280; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;"
-                            >
+                            <a href="{{ route('staff.show', $user) }}" class="db-btn-secondary">
                                 Cancel
                             </a>
-
                         </div>
 
                     </form>
 
                 </div>
-
             </div>
 
         </div>

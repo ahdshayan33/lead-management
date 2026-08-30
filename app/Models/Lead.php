@@ -39,6 +39,8 @@ class Lead extends Model
     protected function casts(): array
     {
         return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'follow_up_date' => 'date',
             'follow_up_reminder_sent_at' => 'datetime',
             'admin_escalation_sent_at' => 'datetime',

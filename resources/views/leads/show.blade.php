@@ -1,458 +1,257 @@
 <x-app-layout>
 
-    <div class="py-12">
+    @php
+        $statusDot = [
+            'new lead'           => 'db-dot--new',
+            'contacted'          => 'db-dot--contacted',
+            'interested'         => 'db-dot--contacted',
+            'follow-up required' => 'db-dot--follow-up',
+            'quotation sent'     => 'db-dot--follow-up',
+            'converted'          => 'db-dot--converted',
+            'lost'               => 'db-dot--lost',
+        ];
 
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        $priorityClass = [
+            'high'   => 'db-priority-high',
+            'medium' => 'db-priority-medium',
+            'low'    => 'db-priority-low',
+        ];
+    @endphp
 
-            <!-- Lead Details -->
+    <div class="db-root py-8 sm:py-10 min-h-screen">
 
-            <div class="bg-white shadow-sm sm:rounded-lg">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-                <div class="p-6">
+            {{-- Page Header --}}
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="db-heading text-2xl font-semibold" style="color: var(--db-ink);">
+                        Lead Details
+                    </h2>
+                    <p class="mt-1 text-sm" style="color: var(--db-ink-soft);">
+                        View information about this lead.
+                    </p>
+                </div>
 
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('leads.index') }}" class="db-btn-secondary">
+                        Back to Leads
+                    </a>
 
-                        <div>
-
-                            <h2 class="text-2xl font-bold">
-                                Lead Details
-                            </h2>
-
-                            <p style="color: #6b7280;">
-                                View information about this lead.
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <a
-                                href="{{ route('leads.index') }}"
-                                style="background-color: #6b7280; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none;"
-                            >
-                                Back to Leads
-                            </a>
-
-                            @if ($lead->status !== 'Converted')
-
-                                <a href="{{ route('leads.edit', $lead) }}"
-                                style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin-left: 10px;"
-                                >
-                                    Edit Lead
-                                </a>
-
-                            @endif
-
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Success Message -->
-
-                    @if (session('success'))
-
-                        <div
-                            style="
-                                background-color: #dcfce7;
-                                color: #166534;
-                                padding: 12px;
-                                margin-bottom: 20px;
-                                border-radius: 6px;
-                            "
-                        >
-                            {{ session('success') }}
-                        </div>
-
+                    @if ($lead->status !== 'Converted')
+                        <a href="{{ route('leads.edit', $lead) }}" class="db-btn-primary">
+                            Edit Lead
+                        </a>
                     @endif
+                </div>
+            </div>
 
+            {{-- Success Message --}}
+            @if (session('success'))
+                <div class="db-tint-block db-tint-block--success db-text-success text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                    <!-- Lead Information -->
+            {{-- Lead Information --}}
+            <div class="db-card">
+                <div class="p-5 sm:p-6">
 
-                    <div style="display: grid; gap: 18px;">
+                    <h3 class="db-heading text-base font-semibold mb-5" style="color: var(--db-ink);">
+                        Lead Information
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                         <div>
-                            <strong>Lead Name</strong>
-                            <p>{{ $lead->name }}</p>
+                            <p class="db-metric-label">Lead Name</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->name }}</p>
                         </div>
 
                         <div>
-                            <strong>Email</strong>
-                            <p>{{ $lead->email ?? 'Not provided' }}</p>
+                            <p class="db-metric-label">Email</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->email ?? 'Not provided' }}</p>
                         </div>
 
                         <div>
-                            <strong>Phone</strong>
-                            <p>{{ $lead->phone }}</p>
+                            <p class="db-metric-label">Phone</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->phone }}</p>
                         </div>
 
                         <div>
-                            <strong>Product / Service</strong>
-                            <p>{{ $lead->product_service }}</p>
+                            <p class="db-metric-label">Product / Service</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->product_service }}</p>
                         </div>
 
                         <div>
-                            <strong>Lead Source</strong>
-                            <p>{{ $lead->lead_source ?? 'Not provided' }}</p>
+                            <p class="db-metric-label">Lead Source</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->lead_source ?? 'Not provided' }}</p>
                         </div>
 
                         <div>
-                            <strong>Communication Method</strong>
-                            <p>{{ ucfirst($lead->communication_method) }}</p>
+                            <p class="db-metric-label">Communication Method</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ ucfirst($lead->communication_method) }}</p>
                         </div>
 
                         <div>
-                            <strong>Status</strong>
-                            <p>{{ $lead->status }}</p>
-                        </div>
-
-                        <div>
-
-                            <strong>Follow-up Date</strong>
-
-                            <p>
-                                {{ $lead->follow_up_date
-                                    ? \Carbon\Carbon::parse($lead->follow_up_date)->format('d F Y')
-                                    : 'Not scheduled'
-                                }}
+                            <p class="db-metric-label">Status</p>
+                            <p class="text-sm mt-1 inline-flex items-center gap-1.5" style="color: var(--db-ink);">
+                                <span class="db-dot {{ $statusDot[strtolower($lead->status)] ?? 'db-dot--contacted' }}"></span>
+                                {{ $lead->status }}
                             </p>
-
                         </div>
 
                         <div>
-
-                            <strong>Priority</strong>
-
-                            <p>
+                            <p class="db-metric-label">Priority</p>
+                            <p class="text-sm mt-1 {{ $priorityClass[strtolower($lead->priority ?? 'medium')] ?? $priorityClass['medium'] }}">
                                 {{ $lead->priority ?? 'Medium' }}
                             </p>
-
                         </div>
 
                         <div>
-
-                            <strong>Assigned Staff</strong>
-
-                            <p>
-                                {{ $lead->assignedStaff?->name ?? 'Unassigned' }}
+                            <p class="db-metric-label">Follow-up Date</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">
+                                {{ $lead->follow_up_date
+                                    ? \Carbon\Carbon::parse($lead->follow_up_date)->format('d F Y')
+                                    : 'Not scheduled' }}
                             </p>
-
                         </div>
 
                         <div>
+                            <p class="db-metric-label">Assigned Staff</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->assignedStaff?->name ?? 'Unassigned' }}</p>
+                        </div>
 
-                            <strong>Requirements / Notes</strong>
-
-                            <p>
-                                {{ $lead->requirements ?? 'No additional requirements.' }}
-                            </p>
-
+                        <div class="sm:col-span-2">
+                            <p class="db-metric-label">Requirements / Notes</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->requirements ?? 'No additional requirements.' }}</p>
                         </div>
 
                         <div>
-
-                            <strong>Registered Date</strong>
-
-                            <p>
-                                {{ $lead->created_at->format('d M Y, h:i A') }}
-                            </p>
-
+                            <p class="db-metric-label">Registered Date</p>
+                            <p class="text-sm mt-1" style="color: var(--db-ink);">{{ $lead->created_at->format('d M Y, h:i A') }}</p>
                         </div>
 
                     </div>
 
                 </div>
-
             </div>
 
+            {{-- Add Activity --}}
+            <div class="db-card">
+                <div class="p-5 sm:p-6">
 
-            <!-- Add Activity -->
-
-            <div class="bg-white shadow-sm sm:rounded-lg" style="margin-top: 25px;">
-
-                <div class="p-6">
-
-                    <h2 class="text-xl font-bold mb-2">
+                    <h3 class="db-heading text-base font-semibold" style="color: var(--db-ink);">
                         Add Activity
-                    </h2>
-
-                    <p style="color: #6b7280; margin-bottom: 20px;">
+                    </h3>
+                    <p class="text-sm mt-0.5 mb-5" style="color: var(--db-ink-soft);">
                         Record a call, WhatsApp message, email, meeting, or other interaction with this lead.
                     </p>
 
-
                     @if ($errors->any())
-
-                        <div
-                            style="
-                                background-color: #fee2e2;
-                                color: #991b1b;
-                                padding: 15px;
-                                margin-bottom: 20px;
-                                border-radius: 6px;
-                            "
-                        >
-
-                            <ul>
-
+                        <div class="db-tint-block db-tint-block--danger db-text-danger text-sm mb-5">
+                            <ul class="list-disc pl-5">
                                 @foreach ($errors->all() as $error)
-
                                     <li>{{ $error }}</li>
-
                                 @endforeach
-
                             </ul>
-
                         </div>
-
                     @endif
 
-
-                    <form
-                        method="POST"
-                        action="{{ route('leads.activities.store', $lead) }}"
-                    >
-
+                    <form method="POST" action="{{ route('leads.activities.store', $lead) }}">
                         @csrf
 
-
-                        <!-- Communication Method -->
-
                         <div class="mb-4">
-
-                            <label
-                                class="block font-medium text-sm text-gray-700"
-                                style="margin-bottom: 6px;"
-                            >
-                                Communication Method
-                            </label>
-
-                            <select
-                                name="communication_method"
-                                required
-                                style="
-                                    width: 100%;
-                                    padding: 10px;
-                                    border: 1px solid #d1d5db;
-                                    border-radius: 6px;
-                                "
-                            >
-
-                                <option value="">
-                                    Select method
-                                </option>
-
-                                <option value="Call">
-                                    Call
-                                </option>
-
-                                <option value="WhatsApp">
-                                    WhatsApp
-                                </option>
-
-                                <option value="Email">
-                                    Email
-                                </option>
-
-                                <option value="Meeting">
-                                    Meeting
-                                </option>
-
-                                <option value="Other">
-                                    Other
-                                </option>
-
+                            <label class="db-label">Communication Method</label>
+                            <select name="communication_method" required class="db-input">
+                                <option value="">Select method</option>
+                                <option value="Call">Call</option>
+                                <option value="WhatsApp">WhatsApp</option>
+                                <option value="Email">Email</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="Other">Other</option>
                             </select>
-
                         </div>
 
-
-                        <!-- Notes -->
-
                         <div class="mb-4">
-
-                            <label
-                                class="block font-medium text-sm text-gray-700"
-                                style="margin-bottom: 6px;"
-                            >
-                                Activity Notes
-                            </label>
-
+                            <label class="db-label">Activity Notes</label>
                             <textarea
                                 name="notes"
                                 rows="4"
                                 required
                                 placeholder="Describe what happened during the interaction..."
-                                style="
-                                    width: 100%;
-                                    padding: 10px;
-                                    border: 1px solid #d1d5db;
-                                    border-radius: 6px;
-                                "
+                                class="db-input"
                             >{{ old('notes') }}</textarea>
-
                         </div>
 
-
-                        <!-- Follow-up Date -->
-
-                        <div class="mb-6">
-
-                            <label
-                                class="block font-medium text-sm text-gray-700"
-                                style="margin-bottom: 6px;"
-                            >
-                                Next Follow-up Date
-                            </label>
-
-                            <input
-                                type="date"
-                                name="follow_up_date"
-                                value="{{ old('follow_up_date') }}"
-                                style="
-                                    width: 100%;
-                                    padding: 10px;
-                                    border: 1px solid #d1d5db;
-                                    border-radius: 6px;
-                                "
-                            >
-
+                        <div class="mb-5">
+                            <label class="db-label">Next Follow-up Date</label>
+                            <input type="date" name="follow_up_date" value="{{ old('follow_up_date') }}" class="db-input">
                         </div>
 
-
-                        <!-- Submit -->
-
-                        <button
-                            type="submit"
-                            style="
-                                background-color: #2563eb;
-                                color: white;
-                                padding: 10px 20px;
-                                border: none;
-                                border-radius: 6px;
-                                font-weight: 600;
-                                cursor: pointer;
-                            "
-                        >
+                        <button type="submit" class="db-btn-primary">
                             Add Activity
                         </button>
-
                     </form>
 
                 </div>
-
             </div>
 
+            {{-- Activity History --}}
+            <div>
 
-            <!-- Activity History -->
-
-            <div class="bg-white shadow-sm sm:rounded-lg" style="margin-top: 25px;">
-
-                <div class="p-6">
-
-                    <h2 class="text-xl font-bold mb-2">
+                <div class="mb-4">
+                    <h3 class="db-heading text-lg font-semibold" style="color: var(--db-ink);">
                         Activity History
-                    </h2>
-
-                    <p style="color: #6b7280; margin-bottom: 20px;">
+                    </h3>
+                    <p class="text-sm mt-0.5" style="color: var(--db-ink-soft);">
                         Previous interactions with this lead.
                     </p>
+                </div>
 
+                @if ($lead->activities->count() > 0)
 
-                    @if ($lead->activities->count() > 0)
+                    <div class="space-y-3">
+                        @foreach ($lead->activities as $activity)
+                            <div class="db-card p-4 sm:p-5">
 
-                        <div style="display: grid; gap: 15px;">
+                                <div class="flex flex-wrap items-start justify-between gap-3">
+                                    <span class="db-badge-neutral">
+                                        {{ $activity->communication_method }}
+                                    </span>
 
-                            @foreach ($lead->activities as $activity)
-
-                                <div
-                                    style="
-                                        border: 1px solid #e5e7eb;
-                                        border-radius: 8px;
-                                        padding: 15px;
-                                    "
-                                >
-
-                                    <div
-                                        style="
-                                            display: flex;
-                                            justify-content: space-between;
-                                            align-items: center;
-                                            margin-bottom: 8px;
-                                        "
-                                    >
-
-                                        <strong>
-                                            {{ $activity->communication_method }}
-                                        </strong>
-
-                                        <span style="color: #6b7280; font-size: 14px;">
-                                            {{ $activity->created_at->format('d M Y, h:i A') }}
-                                        </span>
-
-                                    </div>
-
-
-                                    <p style="margin-bottom: 8px;">
-                                        {{ $activity->notes }}
-                                    </p>
-
-
-                                    <div style="font-size: 14px; color: #6b7280;">
-
-                                        <strong>
-                                            Recorded by:
-                                        </strong>
-
-                                        {{ $activity->user?->name ?? 'Unknown' }}
-
-                                    </div>
-
-
-                                    @if ($activity->follow_up_date)
-
-                                        <div
-                                            style="
-                                                margin-top: 8px;
-                                                font-size: 14px;
-                                                color: #374151;
-                                            "
-                                        >
-
-                                            <strong>
-                                                Next Follow-up:
-                                            </strong>
-
-                                            {{ \Carbon\Carbon::parse($activity->follow_up_date)->format('d F Y') }}
-
-                                        </div>
-
-                                    @endif
-
+                                    <span class="text-xs" style="color: var(--db-ink-faint);">
+                                        {{ $activity->created_at->format('d M Y, h:i A') }}
+                                    </span>
                                 </div>
 
-                            @endforeach
+                                <p class="text-sm mt-3" style="color: var(--db-ink);">
+                                    {{ $activity->notes }}
+                                </p>
 
-                        </div>
+                                <div class="flex flex-wrap items-center gap-3 mt-3 pt-3 text-xs" style="color: var(--db-ink-faint); border-top: 1px solid var(--db-border-soft);">
+                                    <span>Recorded by: {{ $activity->user?->name ?? 'Unknown' }}</span>
 
-                    @else
+                                    @if ($activity->follow_up_date)
+                                        <span>&bull;</span>
+                                        <span>
+                                            Next Follow-up:
+                                            {{ \Carbon\Carbon::parse($activity->follow_up_date)->format('d F Y') }}
+                                        </span>
+                                    @endif
+                                </div>
 
-                        <div
-                            style="
-                                padding: 25px;
-                                text-align: center;
-                                color: #6b7280;
-                                border: 1px solid #e5e7eb;
-                                border-radius: 8px;
-                            "
-                        >
-                            No activities have been recorded for this lead yet.
-                        </div>
+                            </div>
+                        @endforeach
+                    </div>
 
-                    @endif
+                @else
 
-                </div>
+                    <div class="db-card text-center py-12" style="color: var(--db-ink-soft);">
+                        No activities have been recorded for this lead yet.
+                    </div>
+
+                @endif
 
             </div>
 
@@ -461,4 +260,3 @@
     </div>
 
 </x-app-layout>
-```

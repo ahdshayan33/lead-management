@@ -6,6 +6,7 @@ use App\Http\Controllers\LeadActivityController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaffPerformanceController;
+use App\Http\Controllers\FollowUpController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -125,16 +126,54 @@ Route::middleware('auth')->group(function () {
         ->name('staff.show');
 
 
-    Route::get('/reports', [ReportController::class, 'index'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('reports.index');
+    // -------------------------------------------------------------------------
+    // Reports
+    // -------------------------------------------------------------------------
 
+    Route::get('/reports', [ReportController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('reports.index');
+
+
+    // -------------------------------------------------------------------------
+    // Staff Performance
+    // -------------------------------------------------------------------------
 
     Route::get('/staff-performance', [StaffPerformanceController::class, 'index'])
-    ->middleware('auth')
-    ->name('staff.performance');
+        ->name('staff.performance');
+
+
+    // -------------------------------------------------------------------------
+    // Follow-Up Management - Admin
+    // -------------------------------------------------------------------------
+
+    Route::get('/follow-ups', [FollowUpController::class, 'index'])
+        ->middleware('role:admin')
+        ->name('follow-ups.index');
+
+
+    // IMPORTANT:
+    // This route must come before /follow-ups/{lead}/send
+    // so "send-all" is not treated as a lead ID.
+
+    Route::post('/follow-ups/send-all', [FollowUpController::class, 'sendAllReminders'])
+        ->middleware('role:admin')
+        ->name('follow-ups.send-all');
+
+
+    Route::post('/follow-ups/{lead}/send', [FollowUpController::class, 'sendReminder'])
+        ->whereNumber('lead')
+        ->middleware('role:admin')
+        ->name('follow-ups.send');
+
+
+    Route::post('/follow-ups/{lead}/escalate', [FollowUpController::class, 'sendEscalation'])
+        ->whereNumber('lead')
+        ->middleware('role:admin')
+        ->name('follow-ups.escalate');
 
 });
 
 
 require __DIR__.'/auth.php';
+

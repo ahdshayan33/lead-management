@@ -29,21 +29,29 @@ class NewLeadAssigned extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        if ($this->lead->communication_method === 'whatsapp') {
+            $contactInstruction = 'Please contact this lead on WhatsApp within 24 hours.';
+        } else {
+            $contactInstruction = 'Please contact this lead by email within 24 hours.';
+        }
+
         return (new MailMessage)
             ->subject('New Lead Assigned: ' . $this->lead->name)
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('A new lead has been assigned to you.')
+            ->line('**Preferred Contact Method: ' . strtoupper($this->lead->communication_method) . '**')
             ->line('Lead: ' . $this->lead->name)
             ->line('Product / Service: ' . $this->lead->product_service)
             ->line('Phone: ' . $this->lead->phone)
             ->line('Email: ' . ($this->lead->email ?? 'Not provided'))
-            ->line('Please contact this lead within 24 hours.')
+            ->line($contactInstruction)
             ->action(
                 'View Lead',
                 route('leads.show', $this->lead)
             )
             ->line('Please record the contact activity in the Lead Management System after contacting the lead.');
     }
+
 
     /**
      * Database notification.

@@ -1,111 +1,101 @@
 <x-app-layout>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="db-root py-8 sm:py-10 min-h-screen">
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-                    <h2 class="text-2xl font-bold mb-6">
-                        Register New Lead
-                    </h2>
+            {{-- Page Header --}}
+            <div>
+                <h2 class="db-heading text-2xl font-semibold" style="color: var(--db-ink);">
+                    Register New Lead
+                </h2>
+                <p class="mt-1 text-sm" style="color: var(--db-ink-soft);">
+                    Add a new lead to the system.
+                </p>
+            </div>
 
-                    @if (session('success'))
-                        <div class="mb-6 p-4 bg-green-100 text-green-800 rounded">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+            @if (session('success'))
+                <div class="db-tint-block db-tint-block--success db-text-success text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                    @if ($errors->any())
-                        <div class="mb-6 p-4 bg-red-100 text-red-800 rounded">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+            @if ($errors->any())
+                <div class="db-tint-block db-tint-block--danger db-text-danger text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="db-card">
+                <div class="p-5 sm:p-6">
 
                     <form method="POST" action="{{ route('leads.store') }}">
 
                         @csrf
 
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Lead Name
-                            </label>
-
+                            <label class="db-label">Lead Name</label>
                             <input
                                 type="text"
                                 name="name"
                                 value="{{ old('name') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                                 required
                             >
                         </div>
 
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Email Address
-                            </label>
-
+                            <label class="db-label">Email Address</label>
                             <input
                                 type="email"
                                 name="email"
                                 value="{{ old('email') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                             >
                         </div>
 
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Phone Number
-                            </label>
-
+                            <label class="db-label">Phone Number</label>
                             <input
                                 type="text"
                                 name="phone"
                                 value="{{ old('phone') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                                 required
                             >
                         </div>
 
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Requested Product / Service
-                            </label>
-
+                            <label class="db-label">Requested Product / Service</label>
                             <input
                                 type="text"
                                 name="product_service"
                                 value="{{ old('product_service') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                                 required
                             >
                         </div>
 
                         <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Lead Source
-                            </label>
-
+                            <label class="db-label">Lead Source</label>
                             <input
                                 type="text"
                                 name="lead_source"
                                 value="{{ old('lead_source') }}"
                                 placeholder="Facebook, Website, Referral, etc."
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                             >
                         </div>
 
-                        <div class="mb-4">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Preferred Communication Method
-                            </label>
+                        <div class="mb-5">
+                            <label class="db-label">Preferred Communication Method</label>
 
-                            <div class="mt-2">
-                                <label class="mr-6">
+                            <div class="flex items-center gap-6 mt-1 text-sm" style="color: var(--db-ink);">
+                                <label class="inline-flex items-center gap-2">
                                     <input
                                         type="radio"
                                         name="communication_method"
@@ -116,7 +106,7 @@
                                     Email
                                 </label>
 
-                                <label>
+                                <label class="inline-flex items-center gap-2">
                                     <input
                                         type="radio"
                                         name="communication_method"
@@ -129,23 +119,23 @@
                         </div>
 
                         <div class="mb-6">
-                            <label class="block font-medium text-sm text-gray-700">
-                                Additional Requirements / Notes
-                            </label>
-
+                            <label class="db-label">Additional Requirements / Notes</label>
                             <textarea
                                 name="requirements"
                                 rows="4"
-                                class="mt-1 block w-full rounded-md border-gray-300"
+                                class="db-input"
                             >{{ old('requirements') }}</textarea>
                         </div>
 
-                        <button
-                            type="submit"
-                            style="background-color: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;"
-                        >
-                            Register Lead
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button type="submit" class="db-btn-primary">
+                                Register Lead
+                            </button>
+
+                            <a href="{{ route('leads.index') }}" class="db-btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
 
                     </form>
 
@@ -153,6 +143,7 @@
             </div>
 
         </div>
+
     </div>
 
 </x-app-layout>

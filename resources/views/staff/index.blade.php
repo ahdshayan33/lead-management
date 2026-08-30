@@ -1,122 +1,74 @@
 <x-app-layout>
 
-    <div class="py-12">
+    <div class="db-root py-8 sm:py-10 min-h-screen">
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow-sm sm:rounded-lg">
-
-                <div class="p-6">
-
-                    <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-
-                        <div>
-                            <h2 class="text-2xl font-bold">
-                                Staff Management
-                            </h2>
-                            <a
-                                href="{{ route('staff.create') }}"
-                                style="background-color: #2563eb; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600;"
-                            >
-                                + Add New Staff
-                            </a>
-
-                            <p class="text-gray-600">
-                                View and manage staff members.
-                            </p>
-                        </div>
-
-                    </div>
-
-                    @if ($staff->count() > 0)
-
-                        <div style="overflow-x: auto;">
-
-                            <table style="width: 100%; border-collapse: collapse;">
-
-                                <thead>
-
-                                    <tr style="background-color: #f3f4f6;">
-
-                                        <th style="padding: 12px; text-align: left;">
-                                            Staff Name
-                                        </th>
-
-                                        <th style="padding: 12px; text-align: left;">
-                                            Email Address
-                                        </th>
-
-                                        <th style="padding: 12px; text-align: left;">
-                                            Role
-                                        </th>
-
-                                        <th style="padding: 12px; text-align: left;">
-                                            Assigned Leads
-                                        </th>
-
-                                        <th style="padding: 12px; text-align: left;">
-                                            Action
-                                        </th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody>
-
-                                    @foreach ($staff as $member)
-
-                                        <tr style="border-bottom: 1px solid #e5e7eb;">
-
-                                            <td style="padding: 12px;">
-                                                {{ $member->name }}
-                                            </td>
-
-                                            <td style="padding: 12px;">
-                                                {{ $member->email }}
-                                            </td>
-
-                                            <td style="padding: 12px;">
-                                                {{ ucfirst($member->role) }}
-                                            </td>
-
-                                            <td style="padding: 12px;">
-                                                {{ $member->assigned_leads_count }}
-                                            </td>
-
-                                            <td style="padding: 12px;">
-
-                                                <a
-                                                    href="{{ route('staff.show', $member) }}"
-                                                    style="background-color: #2563eb; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none;"
-                                                >
-                                                    View
-                                                </a>
-
-                                            </td>
-
-                                        </tr>
-
-                                    @endforeach
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    @else
-
-                        <div style="padding: 30px; text-align: center; color: #6b7280;">
-                            No staff members have been registered yet.
-                        </div>
-
-                    @endif
-
+            {{-- Page Header --}}
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="db-heading text-2xl font-semibold" style="color: var(--db-ink);">
+                        Staff Management
+                    </h2>
+                    <p class="mt-1 text-sm" style="color: var(--db-ink-soft);">
+                        View and manage staff members.
+                    </p>
                 </div>
 
+                <a href="{{ route('staff.create') }}" class="db-btn-primary self-start sm:self-auto">
+                    + Add New Staff
+                </a>
             </div>
+
+            {{-- Staff Table --}}
+            @if ($staff->count() > 0)
+
+                <div class="db-card">
+                    <div class="overflow-x-auto">
+                        <table class="db-table w-full min-w-[640px]">
+                            <thead>
+                                <tr>
+                                    <th>Staff Name</th>
+                                    <th>Email Address</th>
+                                    <th>Role</th>
+                                    <th>Assigned Leads</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($staff as $member)
+                                    <tr>
+                                        <td class="font-medium" style="color: var(--db-ink);">
+                                            {{ $member->name }}
+                                        </td>
+                                        <td style="color: var(--db-ink-soft);">
+                                            {{ $member->email }}
+                                        </td>
+                                        <td style="color: var(--db-ink-soft);">
+                                            {{ ucfirst($member->role) }}
+                                        </td>
+                                        <td style="color: var(--db-ink-soft);">
+                                            {{ $member->assigned_leads_count }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('staff.show', $member) }}" class="db-link-accent">
+                                                View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            @else
+
+                <div class="db-card text-center py-12" style="color: var(--db-ink-soft);">
+                    No staff members have been registered yet.
+                </div>
+
+            @endif
 
         </div>
 

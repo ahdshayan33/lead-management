@@ -46,6 +46,12 @@
                         @endif
                     </nav>
 
+                    @if (auth()->user()->role === 'admin')
+                        <a href="{{ route('follow-ups.index') }}" class="db-btn-primary">
+                            Follow-up Management
+                        </a>
+                    @endif
+
                     <a href="{{ route('leads.index') }}" class="db-btn-primary">
                         Leads
                     </a>

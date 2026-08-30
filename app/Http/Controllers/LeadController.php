@@ -107,9 +107,9 @@ class LeadController extends Controller
         ]);
 
         /*
-        |--------------------------------------------------------------------------
+      
         | Automatically assign lead to staff member with the fewest active leads
-        |--------------------------------------------------------------------------
+       
         */
 
         $staff = User::where('role', 'staff')
@@ -280,12 +280,19 @@ class LeadController extends Controller
                 'conversion_value' => 'nullable|numeric|min:0',
 
                 'conversion_notes' => 'nullable|string',
+
+                'registered_at' => 'required|date',
             ]);
 
             // Reset reminder if follow-up date has changed
             if ($lead->follow_up_date != ($validated['follow_up_date'] ?? null)) {
                 $validated['follow_up_reminder_sent_at'] = null;
             }
+
+            $lead->created_at = $validated['registered_at'];
+            $lead->save();
+
+            unset($validated['registered_at']);
 
             $lead->update($validated);
         }

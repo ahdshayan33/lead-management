@@ -1,37 +1,36 @@
 <x-app-layout>
 
-    <div class="py-12">
+    <div class="db-root py-8 sm:py-10 min-h-screen">
 
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow-sm sm:rounded-lg">
+            {{-- Page Header --}}
+            <div>
+                <h2 class="db-heading text-2xl font-semibold" style="color: var(--db-ink);">
+                    Edit Lead
+                </h2>
+                <p class="mt-1 text-sm" style="color: var(--db-ink-soft);">
+                    Update this lead's information.
+                </p>
+            </div>
 
-                <div class="p-6">
+            @if ($errors->any())
+                <div class="db-tint-block db-tint-block--danger db-text-danger text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <h2 class="text-2xl font-bold mb-6">
-                        Edit Lead
-                    </h2>
-
-                    @if ($errors->any())
-
-                        <div style="background-color: #fee2e2; color: #991b1b; padding: 15px; margin-bottom: 20px; border-radius: 6px;">
-
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-
-                        </div>
-
-                    @endif
-
+            <div class="db-card">
+                <div class="p-5 sm:p-6">
 
                     <form method="POST" action="{{ route('leads.update', $lead) }}">
 
                         @csrf
                         @method('PUT')
-
 
                         {{-- ================================================= --}}
                         {{-- ADMIN ONLY FIELDS --}}
@@ -39,151 +38,115 @@
 
                         @if (auth()->user()->role === 'admin')
 
-                            <!-- Lead Name -->
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Lead Name
-                                </label>
-
+                                <label class="db-label">Lead Name</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value="{{ old('name', $lead->name) }}"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                     required
                                 >
-
                             </div>
 
-
-                            <!-- Email -->
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Email Address
-                                </label>
-
+                                <label class="db-label">Email Address</label>
                                 <input
                                     type="email"
                                     name="email"
                                     value="{{ old('email', $lead->email) }}"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                 >
-
                             </div>
 
-
-                            <!-- Phone -->
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Phone Number
-                                </label>
-
+                                <label class="db-label">Phone Number</label>
                                 <input
                                     type="text"
                                     name="phone"
                                     value="{{ old('phone', $lead->phone) }}"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                     required
                                 >
-
                             </div>
 
-
-                            <!-- Product / Service -->
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Product / Service
-                                </label>
-
+                                <label class="db-label">Product / Service</label>
                                 <input
                                     type="text"
                                     name="product_service"
                                     value="{{ old('product_service', $lead->product_service) }}"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                     required
                                 >
-
                             </div>
 
-
-                            <!-- Lead Source -->
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Lead Source
-                                </label>
-
+                                <label class="db-label">Lead Source</label>
                                 <input
                                     type="text"
                                     name="lead_source"
                                     value="{{ old('lead_source', $lead->lead_source) }}"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                 >
-
                             </div>
 
-
-                            <!-- Communication Method -->
                             <div class="mb-4">
+                                <label class="db-label">Registered Date & Time</label>
+                                <input
+                                    type="datetime-local"
+                                    name="registered_at"
+                                    value="{{ old('registered_at', $lead->created_at ? $lead->created_at->format('Y-m-d\TH:i') : '') }}"
+                                    class="db-input"
+                                    required
+                                >
 
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Communication Method
-                                </label>
+                                <p class="text-xs mt-1" style="color: var(--db-ink-faint);">
+                                    This is the date and time when the lead was registered.
+                                </p>
+                            </div>
 
-                                <label style="margin-right: 20px;">
+                            <div class="mb-5">
+                                <label class="db-label">Communication Method</label>
 
-                                    <input
-                                        type="radio"
-                                        name="communication_method"
-                                        value="email"
-                                        {{ old('communication_method', $lead->communication_method) == 'email' ? 'checked' : '' }}
-                                        required
-                                    >
+                                <div class="flex items-center gap-6 mt-1 text-sm" style="color: var(--db-ink);">
+                                    <label class="inline-flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="communication_method"
+                                            value="email"
+                                            {{ old('communication_method', $lead->communication_method) == 'email' ? 'checked' : '' }}
+                                            required
+                                        >
+                                        Email
+                                    </label>
 
-                                    Email
-
-                                </label>
-
-
-                                <label>
-
-                                    <input
-                                        type="radio"
-                                        name="communication_method"
-                                        value="whatsapp"
-                                        {{ old('communication_method', $lead->communication_method) == 'whatsapp' ? 'checked' : '' }}
-                                    >
-
-                                    WhatsApp
-
-                                </label>
-
+                                    <label class="inline-flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name="communication_method"
+                                            value="whatsapp"
+                                            {{ old('communication_method', $lead->communication_method) == 'whatsapp' ? 'checked' : '' }}
+                                        >
+                                        WhatsApp
+                                    </label>
+                                </div>
                             </div>
 
                         @endif
-
 
                         {{-- ================================================= --}}
                         {{-- STATUS --}}
                         {{-- ================================================= --}}
 
-                        <div class="mb-4">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Lead Status
-                            </label>
-
+                        <div class="mb-5">
+                            <label class="db-label">Lead Status</label>
                             <select
                                 name="status"
                                 id="lead-status"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                                 required
                             >
-
                                 @foreach ([
                                     'New Lead',
                                     'Contacted',
@@ -193,54 +156,34 @@
                                     'Converted',
                                     'Lost'
                                 ] as $status)
-
                                     <option
                                         value="{{ $status }}"
                                         {{ old('status', $lead->status) == $status ? 'selected' : '' }}
                                     >
                                         {{ $status }}
                                     </option>
-
                                 @endforeach
-
                             </select>
-
                         </div>
 
-
                         {{-- ================================================= --}}
-                        {{-- CONVERSION DETAILS --}}
+                        {{-- CONVERSION DETAILS (shown only when status = Converted) --}}
                         {{-- ================================================= --}}
 
                         <div
                             id="conversion-section"
-                            style="
-                                display: {{ old('status', $lead->status) === 'Converted' ? 'block' : 'none' }};
-                                background-color: #f0fdf4;
-                                border: 1px solid #bbf7d0;
-                                padding: 20px;
-                                border-radius: 8px;
-                                margin-bottom: 20px;
-                            "
+                            class="db-tint-block db-tint-block--success mb-5"
+                            style="display: {{ old('status', $lead->status) === 'Converted' ? 'block' : 'none' }};"
                         >
-
-                            <h3 class="text-lg font-bold text-green-800 mb-1">
+                            <h3 class="text-base font-semibold db-text-success mb-1">
                                 Conversion Details
                             </h3>
-
-                            <p class="text-sm text-green-700 mb-5">
+                            <p class="text-sm db-text-success mb-5" style="opacity: 0.85;">
                                 Enter the details of the successful conversion.
                             </p>
 
-
-                            <!-- Conversion Value -->
-
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Conversion Value
-                                </label>
-
+                                <label class="db-label">Conversion Value</label>
                                 <input
                                     type="number"
                                     name="conversion_value"
@@ -248,265 +191,135 @@
                                     min="0"
                                     step="0.01"
                                     placeholder="e.g. 1500.00"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                 >
-
-                                <p class="text-xs text-gray-500 mt-1">
+                                <p class="text-xs mt-1" style="color: var(--db-ink-faint);">
                                     Enter the value or revenue generated from this conversion.
                                 </p>
-
                             </div>
 
-
-                            <!-- Conversion Notes -->
-
-                            <div class="mb-2">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Conversion Notes
-                                </label>
-
+                            <div class="mb-1">
+                                <label class="db-label">Conversion Notes</label>
                                 <textarea
                                     name="conversion_notes"
                                     rows="4"
                                     placeholder="Add notes about the conversion..."
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                    class="db-input"
                                 >{{ old('conversion_notes', $lead->conversion_notes) }}</textarea>
-
                             </div>
-
 
                             @if ($lead->converted_at)
-
-                                <p class="text-xs text-green-700 mt-3">
-                                    Converted on
-                                    {{ $lead->converted_at->format('d M Y, h:i A') }}
+                                <p class="text-xs db-text-success mt-3">
+                                    Converted on {{ $lead->converted_at->format('d M Y, h:i A') }}
                                 </p>
-
                             @endif
-
                         </div>
-
-
-                       
-                        {{-- ================================================= --}}
-                        {{-- CONVERSION DETAILS --}}
-                        {{-- ================================================= --}}
-
-                        @if ($lead->status === 'Converted' || old('status', $lead->status) === 'Converted')
-
-                            <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Conversion Value
-                                </label>
-
-                                <input
-                                    type="number"
-                                    name="conversion_value"
-                                    value="{{ old('conversion_value', $lead->conversion_value) }}"
-                                    min="0"
-                                    step="0.01"
-                                    placeholder="Enter conversion value"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
-                                >
-
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Enter the value/revenue generated from this conversion.
-                                </p>
-
-                            </div>
-
-
-                            <div class="mb-6">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Conversion Notes
-                                </label>
-
-                                <textarea
-                                    name="conversion_notes"
-                                    rows="4"
-                                    placeholder="Add any notes about the conversion..."
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
-                                >{{ old('conversion_notes', $lead->conversion_notes) }}</textarea>
-
-                            </div>
-
-                        @endif
-
-
 
                         {{-- ================================================= --}}
                         {{-- FOLLOW-UP DATE --}}
                         {{-- ================================================= --}}
 
                         <div class="mb-4">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Follow-up Date
-                            </label>
-
+                            <label class="db-label">Follow-up Date</label>
                             <input
                                 type="date"
                                 name="follow_up_date"
                                 value="{{ old('follow_up_date', $lead->follow_up_date) }}"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                             >
-
                         </div>
-
 
                         {{-- ================================================= --}}
                         {{-- PRIORITY --}}
                         {{-- ================================================= --}}
 
                         <div class="mb-4">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Priority
-                            </label>
-
-                            <select
-                                name="priority"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
-                                required
-                            >
-
+                            <label class="db-label">Priority</label>
+                            <select name="priority" class="db-input" required>
                                 @foreach (['Low', 'Medium', 'High'] as $priority)
-
                                     <option
                                         value="{{ $priority }}"
                                         {{ old('priority', $lead->priority ?? 'Medium') == $priority ? 'selected' : '' }}
                                     >
                                         {{ $priority }}
                                     </option>
-
                                 @endforeach
-
                             </select>
-
                         </div>
-
 
                         {{-- ================================================= --}}
                         {{-- ASSIGN STAFF - ADMIN ONLY --}}
                         {{-- ================================================= --}}
 
                         @if (auth()->user()->role === 'admin')
-
                             <div class="mb-4">
-
-                                <label class="block font-medium text-sm text-gray-700">
-                                    Assign Staff Member
-                                </label>
-
-                                <select
-                                    name="assigned_to"
-                                    style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
-                                >
-
-                                    <option value="">
-                                        Unassigned
-                                    </option>
-
+                                <label class="db-label">Assign Staff Member</label>
+                                <select name="assigned_to" class="db-input">
+                                    <option value="">Unassigned</option>
                                     @foreach ($staff as $member)
-
                                         <option
                                             value="{{ $member->id }}"
                                             {{ old('assigned_to', $lead->assigned_to) == $member->id ? 'selected' : '' }}
                                         >
                                             {{ $member->name }}
                                         </option>
-
                                     @endforeach
-
                                 </select>
-
                             </div>
-
                         @endif
-
 
                         {{-- ================================================= --}}
                         {{-- REQUIREMENTS / NOTES --}}
                         {{-- ================================================= --}}
 
                         <div class="mb-6">
-
-                            <label class="block font-medium text-sm text-gray-700">
-                                Requirements / Notes
-                            </label>
-
+                            <label class="db-label">Requirements / Notes</label>
                             <textarea
                                 name="requirements"
                                 rows="5"
-                                style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;"
+                                class="db-input"
                             >{{ old('requirements', $lead->requirements) }}</textarea>
-
                         </div>
-
 
                         {{-- ================================================= --}}
                         {{-- BUTTONS --}}
                         {{-- ================================================= --}}
 
-                        <button
-                            type="submit"
-                            style="background-color: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;"
-                        >
-                            Update Lead
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button type="submit" class="db-btn-primary">
+                                Update Lead
+                            </button>
 
-
-                        <a
-                            href="{{ route('leads.show', $lead) }}"
-                            style="margin-left: 10px; background-color: #6b7280; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none;"
-                        >
-                            Cancel
-                        </a>
+                            <a href="{{ route('leads.show', $lead) }}" class="db-btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
 
                     </form>
 
                 </div>
-
             </div>
 
         </div>
 
     </div>
 
-
     {{-- ================================================= --}}
     {{-- SHOW / HIDE CONVERSION SECTION --}}
     {{-- ================================================= --}}
 
     <script>
-
         document.addEventListener('DOMContentLoaded', function () {
-
             const statusSelect = document.getElementById('lead-status');
             const conversionSection = document.getElementById('conversion-section');
 
             function toggleConversionSection() {
-
-                if (statusSelect.value === 'Converted') {
-
-                    conversionSection.style.display = 'block';
-
-                } else {
-
-                    conversionSection.style.display = 'none';
-
-                }
+                conversionSection.style.display = statusSelect.value === 'Converted' ? 'block' : 'none';
             }
 
             statusSelect.addEventListener('change', toggleConversionSection);
-
             toggleConversionSection();
-
         });
-
     </script>
 
 </x-app-layout>
